@@ -72,6 +72,45 @@ class Autoloader {
 	}
 
 	/**
+	 * Validates a file name and path against an allowed set of rules.
+	 *
+	 * This is a slightly modified version of validate_file() from WordPress.
+	 *
+	 * @param string $file File path
+	 *
+	 * @return bool Returns TRUE if file path is valid else returns FALSE
+	 */
+	protected function _is_valid_file( string $file ) : bool {
+
+		if ( empty( $file ) ) {
+			return false;
+		}
+
+		// `../` on its own is not allowed:
+		if ( '../' === $file ) {
+			return false;
+		}
+
+		// More than one occurrence of `../` is not allowed:
+		if ( preg_match_all( '#\.\./#', $file, $matches, PREG_SET_ORDER ) && ( count( $matches ) > 1 ) ) {
+			return false;
+		}
+
+		// `../` which does not occur at the end of the path is not allowed:
+		if ( false !== strpos( $file, '../' ) && '../' !== mb_substr( $file, -3, 3 ) ) {
+			return false;
+		}
+
+		// Absolute Windows drive paths are not allowed:
+		if ( ':' === substr( $file, 1, 1 ) ) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	/**
 	 * Method to check if provided file path is valid and if a file exists or not.
 	 *
 	 * @param string $file_path Physical path of file
@@ -83,7 +122,7 @@ class Autoloader {
 		return (
 			! empty( $file_path )
 			&& file_exists( $file_path )
-			&& validate_file( $file_path ) === 0
+			&& $this->_is_valid_file( $file_path )
 		);
 
 	}
@@ -146,7 +185,7 @@ class Autoloader {
 
 		$resource_path = sprintf(
 			'%1$s/classes/%2$s.php',
-			untrailingslashit( $this->_dir_path ),
+			rtrim( $this->_dir_path, '/\\' ),
 			$class_path
 		);
 
