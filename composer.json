@@ -1,0 +1,29 @@
+{
+    "name": "g3/utilities",
+    "description": "Collection of utility code/libraries for use with WordPress plugins/themes.",
+    "type": "library",
+    "license": "GPL-2.0-or-later",
+    "keywords":["wordpress", "wp", "utilities", "goodglammgroup", "g3"],
+    "authors": [
+        {
+            "name": "The Good Glamm Group",
+            "homepage": "https://www.goodglamm.com/",
+            "role": "developer"
+        },
+        {
+            "name": "Amit Gupta",
+            "homepage": "https://amitgupta.in/",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "files": ["g3-utilities.php"]
+    },
+    "support": {
+        "issues": "https://github.com/goodglamm/g3-utilities/issues",
+        "source": "https://github.com/goodglamm/g3-utilities"
+    }
+}

@@ -1,0 +1,21 @@
+# Log files
+.log
+.log*
+
+# Node artifact files
+node_modules/
+
+# Unit test coverage
+_coverage/
+coverage/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# dotenv environment variables file
+.env
