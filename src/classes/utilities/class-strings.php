@@ -54,7 +54,7 @@ class Strings implements Utility_Driver {
 	 * @return string
 	 */
 	public function unleadingslashit( string $txt ) : string {
-		return ltrim( $txt, '/' );
+		return ltrim( $txt, '/\\' );
 	}
 
 	/**
