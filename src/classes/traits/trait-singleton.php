@@ -38,15 +38,23 @@ trait Singleton {
 	 * Method to return Singleton object of the
 	 * current class.
 	 *
+	 * This is a variadic method which is able to accept
+	 * unspecified number of arguments. All of those arguments
+	 * are passed to the constructor of the class using this Trait
+	 * as individual arguments. Whether those arguments
+	 * are used or not depends on the class using this Trait.
+	 *
 	 * This method has been set as final intentionally,
 	 * because it is not meant to be overridden.
 	 *
+	 * @param array $args
+	 *
 	 * @return object
 	 */
-	final public static function get_instance() : object {
+	final public static function get_instance( ...$args ) : self {
 
 		if ( ! is_a( static::$_instance, static::class ) ) {
-			static::$_instance = new static();
+			static::$_instance = new static( ...$args );
 		}
 
 		return static::$_instance;
