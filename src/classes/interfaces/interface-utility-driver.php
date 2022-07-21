@@ -25,7 +25,7 @@ interface Utility_Driver {
 	 *
 	 * @return object
 	 */
-	public static function get_instance() : object;
+	public static function get_instance( ...$args ) : self;
 
 }  // end interface
 
