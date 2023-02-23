@@ -42,7 +42,8 @@ class Autoloader {
 		if ( empty( $namespace_root ) || empty( $dir_path ) ) {
 			throw new ErrorException(
 				sprintf(
-					'%s: Both Namespace and Directory Path are required when registering Namespace for PHP class autoloading.',
+					/* translators: Placeholder is replaced by name of PHP class */
+					__( '%s: Both Namespace and Directory Path are required when registering Namespace for PHP class autoloading.', 'g3-utilities' ),
 					static::class
 				)
 			);

@@ -23,9 +23,9 @@ interface Utility_Driver {
 	 * an instance of itself. It can either implement Singleton
 	 * pattern or Factory pattern.
 	 *
-	 * @return object
+	 * @return static
 	 */
-	public static function get_instance() : object;
+	public static function get_instance( ...$args ) : static;
 
 }  // end interface
 

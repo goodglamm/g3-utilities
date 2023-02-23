@@ -10,6 +10,7 @@ namespace G3\Utilities\Utilities;
 
 use \G3\Utilities\Traits\Singleton;
 use \G3\Utilities\Interfaces\Utility_Driver;
+use \SplFileObject;
 
 class Files implements Utility_Driver {
 
@@ -38,6 +39,35 @@ class Files implements Utility_Driver {
 			&& file_exists( $file_path )
 			&& validate_file( $file_path ) === 0
 		);
+
+	}
+
+	/**
+	 * Method to get the number of lines in a file.
+	 * This works with large files as well because it does not load whole file in memory at once.
+	 *
+	 * @param string $file_path
+	 *
+	 * @return int
+	 */
+	public function get_number_of_lines( string $file_path ) : int {
+
+		$count = 0;
+
+		if ( ! $this->does_exist( $file_path ) ) {
+			return $count;
+		}
+
+		$file = new SplFileObject( $file_path, 'r' );
+
+		while ( ! $file->eof() ) {
+			$data   = $file->fread( 4096 );
+			$count += substr_count( $data, PHP_EOL );
+		}
+
+		unset( $file );
+
+		return $count;
 
 	}
 
