@@ -25,6 +25,17 @@ class Arrays implements Utility_Driver {
 	}
 
 	/**
+	 * Wrapper around `empty()` because passing it directly to the `array_filter()` does not work.
+	 *
+	 * @param mixed $value
+	 *
+	 * @return bool
+	 */
+	protected function _is_value_empty( mixed $value ) : bool {
+		return empty( $value );
+	}
+
+	/**
 	 * Method to inject value in an array at a specific position.
 	 *
 	 * @param mixed $to_inject
@@ -33,7 +44,7 @@ class Arrays implements Utility_Driver {
 	 *
 	 * @return array
 	 */
-	public function inject( $to_inject, int $position, array $inject_into ) : array {
+	public function inject( mixed $to_inject, int $position, array $inject_into ) : array {
 
 		$before = [];
 		$after  = [];
@@ -76,6 +87,29 @@ class Arrays implements Utility_Driver {
 		);
 
 		return ( 1 > $numeric_indices );
+
+	}
+
+	/**
+	 * Method to check if the passed array has any empty index.
+	 * This works reliably only on single dimension arrays having string values
+	 * or values which can be evaluated using the `empty()` function.
+	 * That is why this method will not work with boolean FALSE, numeric zero, etc.
+	 *
+	 * @param array $data
+	 *
+	 * @return bool
+	 */
+	public function has_empty_indices( array $data ) : bool {
+
+		$empty_indices = count(
+			array_filter(
+				$data,
+				[ $this, '_is_value_empty' ]
+			)
+		);
+
+		return ( 0 < $empty_indices );
 
 	}
 
