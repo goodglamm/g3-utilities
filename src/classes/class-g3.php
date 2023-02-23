@@ -28,6 +28,7 @@ class G3 {
 			Utilities\Files::class,
 			Utilities\Input::class,
 			Utilities\Strings::class,
+			Utilities\Time::class,
 		],
 	];
 
