@@ -26,6 +26,25 @@ class Strings implements Utility_Driver {
 	}
 
 	/**
+	 * Utility method to check if text string is unicode or not.
+	 *
+	 * @param string $txt
+	 *
+	 * @return bool
+	 */
+	public function is_unicode( string $txt ) : bool {
+
+		if ( $this->is_empty( $txt ) ) {
+			return false;
+		}
+
+		$txt_encoding = mb_detect_encoding( $txt, [ 'ASCII', 'UTF-8' ], true );  // keep ASCII before UTF-8 to prevent false positives
+
+		return ( 'UTF-8' === $txt_encoding );
+
+	}
+
+	/**
 	 * Method to check if a string is empty or not.
 	 * This is similar to `empty()` but it does not count whitespace as non-empty string.
 	 *
@@ -44,6 +63,17 @@ class Strings implements Utility_Driver {
 		// Now we check if there's anything in the string
 		return ( 1 > mb_strlen( $txt ) );
 
+	}
+
+	/**
+	 * Method to add slash at beginning of text string
+	 *
+	 * @param string $txt
+	 *
+	 * @return string
+	 */
+	public function leadingslashit( string $txt ) : string {
+		return sprintf( '/%s', $this->unleadingslashit( $txt ) );
 	}
 
 	/**
@@ -90,7 +120,7 @@ class Strings implements Utility_Driver {
 	 *
 	 * @throws \ErrorException
 	 */
-	public function search_replace( $search, $replace, string $subject ) : string {
+	public function search_replace( string|array $search, string|array $replace, string $subject ) : string {
 
 		$original_subject = $subject;
 
@@ -103,7 +133,8 @@ class Strings implements Utility_Driver {
 		) {
 			throw new ErrorException(
 				sprintf(
-					'%1$s::%2$s() expects "search" and "replace" parameters to be of either String or Array type.',
+					/* translators: placeholders are class and method names */
+					__( '%1$s::%2$s() expects "search" and "replace" parameters to be of either String or Array type.', 'g3-utilities' ),
 					static::class,
 					__FUNCTION__
 				)
@@ -113,7 +144,8 @@ class Strings implements Utility_Driver {
 		if ( ! is_array( $search ) && is_array( $replace ) ) {
 			throw new ErrorException(
 				sprintf(
-					'%1$s::%2$s() expects "replace" parameter to be of String type when "search" parameter is of String type.',
+					/* translators: placeholders are class and method names */
+					__( '%1$s::%2$s() expects "replace" parameter to be of String type when "search" parameter is of String type.', 'g3-utilities' ),
 					static::class,
 					__FUNCTION__
 				)
@@ -123,7 +155,8 @@ class Strings implements Utility_Driver {
 		if ( is_array( $search ) && is_array( $replace ) && count( $search ) > count( $replace ) ) {
 			throw new ErrorException(
 				sprintf(
-					'%1$s::%2$s() expects "replace" parameter to contain items equal in number to items in "search" parameter.',
+					/* translators: placeholders are class and method names */
+					__( '%1$s::%2$s() expects "replace" parameter to contain items equal in number to items in "search" parameter.', 'g3-utilities' ),
 					static::class,
 					__FUNCTION__
 				)
@@ -160,7 +193,12 @@ class Strings implements Utility_Driver {
 
 		}  // end array handling block
 
-		$subject = mb_split( preg_quote( $search ), $subject );
+		if ( $this->is_unicode( $search ) ) {
+			$subject = mb_split( preg_quote( $search ), $subject );
+		} else {
+			$subject = explode( $search, $subject );
+		}
+
 		$subject = implode( $replace, $subject );
 
 		return $subject;
@@ -214,6 +252,75 @@ class Strings implements Utility_Driver {
 		$words_per_minute = absint( $words_per_minute );
 
 		return (int) ( floor( $this->get_word_count( $txt ) / $words_per_minute ) );
+
+	}
+
+	/**
+	 * Method to sanitize a string to be used as a key/var name.
+	 *
+	 * This is similar to sanitize_key() but unlike that method
+	 * this one accepts only a string as a key, does not change
+	 * the case and does not allow hyphens.
+	 *
+	 * This method is not multibyte compatible and works only with
+	 * basic latin characters.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
+	public function get_sanitized_key( string $key ) : string {
+
+		$sanitized_key = '';
+
+		if ( empty( $key ) ) {
+			return $sanitized_key;
+		}
+
+		$key           = trim( $key );
+		$sanitized_key = preg_replace( '/[^A-Za-z0-9_]/', '', $key );
+
+		return $sanitized_key;
+
+	}
+
+	/**
+	 * Method to sanitize a string and strip out all HTML except links.
+	 *
+	 * @param string $pattern
+	 * @param array  $link_parts
+	 *
+	 * @return string
+	 *
+	 * @throws \ErrorException
+	 */
+	public function get_sanitized_with_links( string $pattern, array $link_parts ) : string {
+
+		if ( empty( $pattern ) || empty( $link_parts ) ) {
+			throw new ErrorException(
+				sprintf(
+					/* Translators: Placeholders are names of class and method. */
+					__( '%s::%s() expects non empty parameters.', 'g3-utilities' ),
+					static::class,
+					__FUNCTION__
+				)
+			);
+		}
+
+		$allowed_html = [
+			'a' => [
+				'href'   => true,
+				'title'  => true,
+				'rel'    => true,
+				'target' => true,
+				'class'  => true,
+			],
+		];
+
+		return vsprintf(
+			wp_kses( ent2ncr( $pattern ), $allowed_html ),
+			$link_parts
+		);
 
 	}
 
