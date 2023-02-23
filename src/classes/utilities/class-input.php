@@ -62,7 +62,8 @@ class Input implements Utility_Driver {
 			default:
 				throw new ErrorException(
 					sprintf(
-						'Called non-existent method %s::%s()',
+						/* translators: placeholders are class and method names */
+						__( 'Called non-existent method %s::%s()', 'g3-utilities' ),
 						static::class,
 						$name
 					)
@@ -124,7 +125,7 @@ class Input implements Utility_Driver {
 	 *
 	 * @codeCoverageIgnore
 	 */
-	public function filter( int $type, string $var_name, int $filter = FILTER_DEFAULT, $options = 0 ) {
+	public function filter( int $type, string $var_name, int $filter = FILTER_DEFAULT, array|int $options = 0 ) : mixed {
 
 		/*
 		 * filter_input() does not work on CLI, so let's isolate code
@@ -153,33 +154,14 @@ class Input implements Utility_Driver {
 		// We don't want this flagged by any phpcs ruleset
 		// phpcs:disable
 
-		switch ( $type ) {
-
-			case INPUT_GET:
-				$value_to_return = $_GET[ $var_name ] ?? null;
-				break;
-
-			case INPUT_POST:
-				$value_to_return = $_POST[ $var_name ] ?? null;
-				break;
-
-			case INPUT_COOKIE:
-				$value_to_return = $_COOKIE[ $var_name ] ?? null;
-				break;
-
-			case INPUT_SERVER:
-				$value_to_return = $_SERVER[ $var_name ] ?? null;
-				break;
-
-			case INPUT_ENV:
-				$value_to_return = $_ENV[ $var_name ] ?? null;
-				break;
-
-			default:
-				$value_to_return = null;
-				break;
-
-		}
+		$value_to_return = match ( $type ) {
+			INPUT_GET    => $_GET[ $var_name ] ?? null,
+			INPUT_POST   => $_POST[ $var_name ] ?? null,
+			INPUT_COOKIE => $_COOKIE[ $var_name ] ?? null,
+			INPUT_SERVER => $_SERVER[ $var_name ] ?? null,
+			INPUT_ENV    => $_ENV[ $var_name ] ?? null,
+			default      => null,
+		};
 
 		// phpcs:enable
 
