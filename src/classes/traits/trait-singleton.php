@@ -12,7 +12,7 @@ namespace G3\Utilities\Traits;
 trait Singleton {
 
 	/**
-	 * @var object
+	 * @var static
 	 */
 	protected static $_instance;
 
@@ -49,9 +49,9 @@ trait Singleton {
 	 *
 	 * @param array $args
 	 *
-	 * @return object
+	 * @return static
 	 */
-	final public static function get_instance( ...$args ) : self {
+	final public static function get_instance( ...$args ) : static {
 
 		if ( ! is_a( static::$_instance, static::class ) ) {
 			static::$_instance = new static( ...$args );

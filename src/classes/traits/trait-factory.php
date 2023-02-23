@@ -28,7 +28,7 @@ trait Factory {
 	 *
 	 * @return static
 	 */
-	final public static function get_instance( ...$args ) : self {
+	final public static function get_instance( ...$args ) : static {
 
 		return new static( ...$args );
 
